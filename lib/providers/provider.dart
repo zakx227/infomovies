@@ -1,0 +1,23 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:infomovis/models/movie.dart';
+import 'package:infomovis/services/movie_api_service.dart';
+
+final apiProvider = Provider<MovieApiService>((ref) => MovieApiService());
+
+final popularMovieProvider = FutureProvider<List<Movie>>((ref) async {
+  return ref.watch(apiProvider).fetchMovies();
+});
+
+final searcheQueryProvider = StateProvider<String>((ref) => '');
+
+final searchMoviesProvider = FutureProvider<List<Movie>>((ref) {
+  final query = ref.watch(searcheQueryProvider);
+  if (query.isEmpty) {
+    return Future.value([]);
+  }
+  return ref.watch(apiProvider).searchMovies(query);
+});
+
+final movieDetailProvider = FutureProvider.family<Movie, int>((ref, id) async {
+  return ref.watch(apiProvider).fetchMovieDetail(id);
+});
