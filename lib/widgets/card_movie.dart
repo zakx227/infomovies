@@ -7,14 +7,18 @@ class CardMovie extends StatelessWidget {
   final String lang;
   final String note;
   final String img;
+  void Function()? onPressed;
+  final bool? favori;
 
-  const CardMovie({
+  CardMovie({
     super.key,
     required this.title,
     required this.date,
     required this.lang,
     required this.note,
     required this.img,
+    this.onPressed,
+    this.favori,
   });
   @override
   Widget build(BuildContext context) {
@@ -27,6 +31,7 @@ class CardMovie extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
@@ -71,6 +76,12 @@ class CardMovie extends StatelessWidget {
               ],
             ),
           ),
+          favori == true
+              ? IconButton(
+                onPressed: onPressed,
+                icon: Icon(Icons.delete_forever, color: Colors.red, size: 32),
+              )
+              : Container(),
         ],
       ),
     );

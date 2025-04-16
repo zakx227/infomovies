@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:infomovis/models/movie.dart';
 import 'package:infomovis/providers/provider.dart';
 import 'package:infomovis/utils/constants.dart';
 
@@ -84,7 +83,19 @@ class DetailScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color(0xFF032541),
-        onPressed: () {},
+        onPressed: () {
+          movieDetail.when(
+            data: (movie) {
+              ref.read(movieNotifierProvider.notifier).addMovie(movie);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Film ajouté aux favoris!')),
+              );
+            },
+            loading: () {},
+            error: (err, _) {},
+          );
+        },
+
         child: Icon(Icons.favorite, color: Colors.white, size: 20),
       ),
     );
