@@ -7,10 +7,10 @@ class CardMovie extends StatelessWidget {
   final String lang;
   final String note;
   final String img;
-  void Function()? onPressed;
+  final Function()? onPressed;
   final bool? favori;
 
-  CardMovie({
+  const CardMovie({
     super.key,
     required this.title,
     required this.date,
@@ -42,8 +42,16 @@ class CardMovie extends StatelessWidget {
                 imageUrl: 'https://image.tmdb.org/t/p/original/$img',
                 fit: BoxFit.cover,
                 placeholder:
-                    (context, url) =>
-                        CircularProgressIndicator(color: Colors.white),
+                    (context, url) => Container(
+                      padding: EdgeInsets.all(40),
+                      height: 30,
+                      width: 30,
+                      child: SizedBox(
+                        height: 0,
+                        width: 0,
+                        child: CircularProgressIndicator(color: Colors.white),
+                      ),
+                    ),
                 errorWidget: (context, url, error) => Icon(Icons.error),
               ),
             ),

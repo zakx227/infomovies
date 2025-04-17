@@ -55,7 +55,14 @@ class HomeScreen extends ConsumerWidget {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-          loading: () => Center(child: CircularProgressIndicator()),
+          loading:
+              () => Center(
+                child: SizedBox(
+                  height: 50,
+                  width: 50,
+                  child: CircularProgressIndicator(),
+                ),
+              ),
         ),
       ),
     );

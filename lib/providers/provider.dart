@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:infomovis/models/cast.dart';
 import 'package:infomovis/models/movie.dart';
 import 'package:infomovis/providers/favorites_provider.dart';
 import 'package:infomovis/services/movie_api_service.dart';
@@ -27,3 +28,10 @@ final movieNotifierProvider =
     StateNotifierProvider<FavoritesNotifier, List<Movie>>((ref) {
       return FavoritesNotifier();
     });
+
+final movieCastProvider = FutureProvider.family<List<Cast>, int>((
+  ref,
+  id,
+) async {
+  return ref.watch(apiProvider).fetchMovieCast(id);
+});

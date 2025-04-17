@@ -34,47 +34,97 @@ class DetailScreen extends ConsumerWidget {
         margin: EdgeInsets.only(bottom: 30),
         child: movieDetail.when(
           data: (data) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  height: 300,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl:
-                          'https://image.tmdb.org/t/p/original/${data.posterPath}',
-                      fit: BoxFit.cover,
-                      placeholder:
-                          (context, url) =>
-                              CircularProgressIndicator(color: Colors.white),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    height: 300,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: CachedNetworkImage(
+                        imageUrl:
+                            'https://image.tmdb.org/t/p/original/${data.posterPath}',
+                        fit: BoxFit.cover,
+                        placeholder:
+                            (context, url) => Container(
+                              padding: EdgeInsets.all(110),
+                              child: SizedBox(
+                                height: 0,
+                                width: 0,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
                     ),
                   ),
-                ),
-                Text(
-                  data.title,
-                  style: TextStyle(color: Colors.red, fontSize: 30),
-                ),
-                Expanded(
-                  child: Text(
-                    data.overview,
-                    style: TextStyle(color: Colors.white, fontSize: 15),
+                  SizedBox(height: 10),
+                  Text(
+                    data.title,
+                    style: TextStyle(color: Colors.red, fontSize: 30),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Note : ${data.voteCount}',
-                        style: TextStyle(color: Colors.white, fontSize: 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      data.overview,
+                      style: TextStyle(color: Colors.white, fontSize: 15),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      'Casting',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                  ref
+                      .watch(movieCastProvider(movieId))
+                      .when(
+                        data:
+                            (castList) => SizedBox(
+                              height: 150,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: castList.length,
+                                itemBuilder: (context, index) {
+                                  final cast = castList[index];
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundImage: NetworkImage(
+                                            'https://image.tmdb.org/t/p/w200${cast.profilePath}',
+                                          ),
+                                          radius: 40,
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          cast.name,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                        loading: () => CircularProgressIndicator(),
+                        error: (e, _) => Text('Erreur cast : $e'),
+                      ),
+                ],
+              ),
             );
           },
           error: (err, _) => Center(child: Text("Erreur : $err")),
