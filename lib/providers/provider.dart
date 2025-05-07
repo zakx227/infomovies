@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:infomovis/models/cast.dart';
 import 'package:infomovis/models/movie.dart';
+import 'package:infomovis/models/video.dart';
 import 'package:infomovis/providers/favorites_provider.dart';
 import 'package:infomovis/services/movie_api_service.dart';
 
@@ -34,4 +35,11 @@ final movieCastProvider = FutureProvider.family<List<Cast>, int>((
   id,
 ) async {
   return ref.watch(apiProvider).fetchMovieCast(id);
+});
+
+final movieVideoProvider = FutureProvider.family<List<Video>, int>((
+  ref,
+  movieId,
+) async {
+  return ref.watch(apiProvider).fetchMovieVideos(movieId);
 });

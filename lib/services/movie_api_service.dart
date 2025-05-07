@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:infomovis/models/cast.dart';
 import 'package:infomovis/models/movie.dart';
+import 'package:infomovis/models/video.dart';
 import 'package:infomovis/utils/constants.dart';
 
 class MovieApiService {
@@ -12,13 +13,7 @@ class MovieApiService {
   Future<List<Movie>> fetchMovies() async {
     final Uri uri = Uri.parse("$_url$_endpointPopular?api_key=$apiKey");
     var reponse = await http.get(uri);
-    if (reponse.statusCode == 200) {
-      List<dynamic> data = json.decode(reponse.body)['results'];
-      List<Movie> movies = data.map((m) => Movie.fromJson(m)).toList();
-      return movies;
-    } else {
-      throw Exception(reponse.reasonPhrase);
-    }
+    return result(reponse);
   }
 
   Future<List<Movie>> searchMovies(String query) async {
@@ -26,6 +21,10 @@ class MovieApiService {
       "$_url$_endpointSearch?api_key=$apiKey&query=$query",
     );
     final reponse = await http.get(uri);
+    return result(reponse);
+  }
+
+  Future<List<Movie>> result(http.Response reponse) async {
     if (reponse.statusCode == 200) {
       List<dynamic> data = json.decode(reponse.body)['results'];
       return data.map((m) => Movie.fromJson(m)).toList();
@@ -56,6 +55,22 @@ class MovieApiService {
       return data.map((m) => Cast.fromJson(m)).toList();
     } else {
       throw Exception('Erreur lors du chargement du cast');
+    }
+  }
+
+  Future<List<Video>> fetchMovieVideos(int movieId) async {
+    final response = await http.get(
+      Uri.parse(
+        'https://api.themoviedb.org/3/movie/$movieId/videos?api_key=$apiKey&language=fr-FR',
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      final List<dynamic> videosJson = jsonData['results'];
+      return videosJson.map((json) => Video.fromJson(json)).toList();
+    } else {
+      throw Exception('Erreur lors du chargement des vidéos');
     }
   }
 }

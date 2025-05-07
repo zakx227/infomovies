@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:infomovis/models/video.dart';
 import 'package:infomovis/providers/provider.dart';
 import 'package:infomovis/utils/constants.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class DetailScreen extends ConsumerWidget {
   final int movieId;
@@ -123,14 +125,158 @@ class DetailScreen extends ConsumerWidget {
                         loading: () => CircularProgressIndicator(),
                         error: (e, _) => Text('Erreur cast : $e'),
                       ),
+                  /*  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      'Bande-annonce',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),*/
+                  /* ref
+                      .watch(movieVideoProvider(movieId))
+                      .when(
+                        data: (videos) {
+                          final trailer = videos.firstWhere(
+                            (v) => v.site == 'YouTube' && v.type == 'Trailer',
+                            orElse:
+                                () => Video(
+                                  key: '',
+                                  name: '',
+                                  site: '',
+                                  type: '',
+                                ),
+                          );
+              
+                          if (trailer.key.isEmpty) {
+                            return Text(
+                              "Aucune bande-annonce disponible",
+                              style: TextStyle(color: Colors.white),
+                            );
+                          }
+              
+                          return Container(
+                            height: 200,
+                            width: double.infinity,
+                            margin: EdgeInsets.symmetric(vertical: 10),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: Stack(
+                                children: [
+                                  Image.network(
+                                    'https://img.youtube.com/vi/${trailer.key}/0.jpg',
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  ),
+                                  Center(
+                                    child: IconButton(
+                                      icon: Icon(
+                                        Icons.play_circle_fill,
+                                        color: Colors.white,
+                                        size: 64,
+                                      ),
+                                      onPressed: () {
+                                        launchUrl(
+                                          Uri.parse(
+                                            'https://www.youtube.com/watch?v=${trailer.key}',
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        loading: () => CircularProgressIndicator(),
+                        error:
+                            (e, _) => Text(
+                              'Erreur vidéo : $e',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                      ),*/
+                  ref
+                      .watch(movieVideoProvider(movieId))
+                      .when(
+                        data: (videos) {
+                          final trailer = videos.firstWhere(
+                            (v) => v.site == 'YouTube' && v.type == 'Trailer',
+                            orElse:
+                                () => Video(
+                                  key: '',
+                                  name: '',
+                                  site: '',
+                                  type: '',
+                                ),
+                          );
+
+                          if (trailer.key.isEmpty) {
+                            return Text(
+                              "Aucune bande-annonce disponible",
+                              style: TextStyle(color: Colors.white),
+                            );
+                          }
+
+                          final YoutubePlayerController controller =
+                              YoutubePlayerController(
+                                initialVideoId: trailer.key,
+                                flags: YoutubePlayerFlags(autoPlay: false),
+                              );
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Bande-annonce',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                YoutubePlayer(
+                                  controller: controller,
+                                  showVideoProgressIndicator: true,
+                                  progressIndicatorColor: Colors.red,
+                                  progressColors: ProgressBarColors(
+                                    playedColor: Colors.red,
+                                    handleColor: Colors.redAccent,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        loading: () => CircularProgressIndicator(),
+                        error:
+                            (e, _) => Text(
+                              'Erreur vidéo : $e',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                      ),
+                  Container(height: 90),
                 ],
               ),
             );
           },
-          error: (err, _) => Center(child: Text("Erreur : $err")),
+          error:
+              (err, _) => Center(
+                child: Text(
+                  "Erreur : $err",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
           loading: () => Center(child: CircularProgressIndicator()),
         ),
       ),
+
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color(0xFF032541),
         onPressed: () {

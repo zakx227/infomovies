@@ -12,7 +12,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final pages = [HomeScreen(), SearchScreen(), FavoriScreen()];
-  bool selectedColor = false;
   int index = 0;
 
   @override
