@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:infomovis/models/video.dart';
 import 'package:infomovis/providers/provider.dart';
+import 'package:infomovis/screens/detail_actor.dart';
 import 'package:infomovis/utils/constants.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -102,11 +103,25 @@ class DetailScreen extends ConsumerWidget {
                                     padding: const EdgeInsets.all(8.0),
                                     child: Column(
                                       children: [
-                                        CircleAvatar(
-                                          backgroundImage: NetworkImage(
-                                            'https://image.tmdb.org/t/p/w200${cast.profilePath}',
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder:
+                                                    (context) =>
+                                                        ActorDetailScreen(
+                                                          actorId: cast.id!,
+                                                        ),
+                                              ),
+                                            );
+                                          },
+                                          child: CircleAvatar(
+                                            backgroundImage: NetworkImage(
+                                              'https://image.tmdb.org/t/p/w200${cast.profilePath}',
+                                            ),
+                                            radius: 40,
                                           ),
-                                          radius: 40,
                                         ),
                                         SizedBox(height: 5),
                                         Text(

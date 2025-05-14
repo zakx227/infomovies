@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:infomovis/models/actor.dart';
 import 'package:infomovis/models/cast.dart';
 import 'package:infomovis/models/movie.dart';
 import 'package:infomovis/models/video.dart';
 import 'package:infomovis/utils/constants.dart';
+import 'package:infomovis/utils/logger.dart';
 
 class MovieApiService {
   final String _url = "https://api.themoviedb.org/3";
@@ -13,6 +15,7 @@ class MovieApiService {
   Future<List<Movie>> fetchMovies() async {
     final Uri uri = Uri.parse("$_url$_endpointPopular?api_key=$apiKey");
     var reponse = await http.get(uri);
+    HttpLogger.log(reponse);
     return result(reponse);
   }
 
@@ -21,6 +24,7 @@ class MovieApiService {
       "$_url$_endpointSearch?api_key=$apiKey&query=$query",
     );
     final reponse = await http.get(uri);
+    HttpLogger.log(reponse);
     return result(reponse);
   }
 
@@ -64,13 +68,43 @@ class MovieApiService {
         'https://api.themoviedb.org/3/movie/$movieId/videos?api_key=$apiKey&language=fr-FR',
       ),
     );
-
+    HttpLogger.log(response);
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
       final List<dynamic> videosJson = jsonData['results'];
       return videosJson.map((json) => Video.fromJson(json)).toList();
     } else {
       throw Exception('Erreur lors du chargement des vidéos');
+    }
+  }
+
+  Future<Actor> fetchActorDetails(int actorId) async {
+    final response = await http.get(
+      Uri.parse(
+        'https://api.themoviedb.org/3/person/$actorId?api_key=$apiKey&language=fr-FR',
+      ),
+    );
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return Actor.fromJson(json);
+    } else {
+      throw Exception('Erreur ');
+    }
+  }
+
+  Future<List<Movie>> fetchMovieActor(int actorId) async {
+    final response = await http.get(
+      Uri.parse(
+        'https://api.themoviedb.org/3/person/$actorId/movie_credits?api_key=$apiKey&language=fr-FR',
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final List results = json['cast'];
+      return results.map((item) => Movie.fromJson(item)).toList();
+    } else {
+      throw Exception('Erreur ');
     }
   }
 }
